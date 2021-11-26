@@ -217,7 +217,7 @@ class Metro:
 
         return distance, path
 
-    def export_file(self, filename="exported", extension="xlsx", matrix=None):
+    def export_file(self, filename="exported", extension="xlsx", path=None, matrix=None):
         if matrix is None:
             if len(self.get_distance_map()) != self.metro_length:
                 self.create_distance_map()
@@ -233,6 +233,9 @@ class Metro:
             matrix[row].insert(0, stations[row])
 
         arr = numpy.asarray(matrix)
+
+        if path is not None:
+            filename = f"{path}/{filename}"
 
         if extension is "xlsx":
             pandas.DataFrame(arr).to_excel(filename=f"{filename}.{extension}", index=False, header=False)

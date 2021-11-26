@@ -33,7 +33,7 @@ def find_time(n=52):
     return end_find - start_find
 
 
-def cache_comparison():
+def cache_comparison(filename=None):
     s = 52
 
     stations = []
@@ -61,12 +61,13 @@ def cache_comparison():
     plt.legend()
 
     plt.draw()
-    plt.savefig("cache_comparison.png")
+    if filename is not None:
+        plt.savefig(filename)
 
     plt.show()
 
 
-def print_graph(resolution=2048, dpi=256, filename="demo.png"):
+def print_graph(resolution=2048, dpi=256, filename=None):
     metro = Metro()
 
     G = nx.DiGraph(directed=True)
@@ -114,12 +115,14 @@ def print_graph(resolution=2048, dpi=256, filename="demo.png"):
     plt.tight_layout()
 
     plt.draw()
-    plt.savefig(filename, dpi=dpi, bbox_inches="tight")
 
-    # plt.show()
+    if filename is not None:
+        plt.savefig(filename, dpi=dpi, bbox_inches="tight")
+
+    plt.show()
     plt.close()
 
 
-cache_comparison()
+cache_comparison(filename="img/cache_comparison.png")
 
-print_graph(resolution=2048 * 3, dpi=312, filename="graph/graph.png")
+print_graph(resolution=2048 * 3, dpi=312, filename="img/graph.png")

@@ -114,8 +114,8 @@ metro.get_distance_map(print_result=True)
     
     Для экспорта используется следующий метод
         
-        export_file(filename="filename", extension="csv")
+        export_file(path="tables", filename="filename", extension="csv")
         
 """
 
-metro.export_file(filename="export", extension="csv")
+metro.export_file(path="tables", filename="export", extension="csv")
