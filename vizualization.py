@@ -104,9 +104,9 @@ def print_graph(resolution=2048, dpi=256, filename=None):
     nx.draw_networkx_labels(G, pos, font_size=7)
 
     regular_edges = dict([((u, v), d['weight'])
-                          for u, v, d in G.edges(data=True) if d['type'] is 'regular'])
+                          for u, v, d in G.edges(data=True) if d['type'] == 'regular'])
     transfer_edges = dict([((u, v), d['weight'])
-                          for u, v, d in G.edges(data=True) if d['type'] is 'transfer'])
+                          for u, v, d in G.edges(data=True) if d['type'] == 'transfer'])
 
     nx.draw_networkx_edges(G, pos, edgelist=regular_edges, edge_color='green', connectionstyle='arc3, rad = 0.1')
     nx.draw_networkx_edges(G, pos, edgelist=transfer_edges, edge_color='red', connectionstyle='arc3, rad = 0.1')

@@ -237,9 +237,9 @@ class Metro:
         if path is not None:
             filename = f"{path}/{filename}"
 
-        if extension is "xlsx":
+        if extension == "xlsx":
             pandas.DataFrame(arr).to_excel(filename=f"{filename}.{extension}", index=False, header=False)
-        if extension is "csv":
+        if extension == "csv":
             pandas.DataFrame(arr).to_csv(f"{filename}.{extension}", index=False, header=False)
 
         return True
@@ -257,9 +257,9 @@ class Metro:
         for edge, vertices in zip([vertex for vertex in range(matrix_length)], matrix):
             arr = []
             for vertex in vertices:
-                if vertex is self.INF:
+                if vertex == self.INF:
                     arr.append("∞")
-                elif vertex is 0:
+                elif vertex == 0:
                     arr.append("X")
                 else:
                     arr.append(time.strftime("%M:%S", time.gmtime(vertex)))
