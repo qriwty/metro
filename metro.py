@@ -1,5 +1,4 @@
 import map
-# import datetime
 import math
 import re
 import time
@@ -26,70 +25,29 @@ class Metro:
         self.path_map = {}
 
         if setup_environment:
-            self.set_metro_stations()
-            self.create_metro_matrix()
-            self.explore_path()
+            self.setup_environment(distance_map=True, path_map=True)
+
+    def setup_environment(self, distance_map=False, path_map=False):
+        self.set_metro_stations()
+        self.create_metro_matrix()
+        if distance_map:
             self.create_distance_map()
+        if path_map:
+            self.explore_path()
 
-    def get_station_name(self, station, language=None):
-        if language is None:
-            language = self.language
-        if isinstance(station, int):
-            station = self.metro_stations[station]
-            return self.language_pack[station][language]
-        if isinstance(station, str):
-            return self.language_pack[station][language]
-
-    def get_service_name(self, service, language=None):
-        if language is None:
-            language = self.language
-        return self.service_pack[service][language]
-
-    def get_sort_key(self, id):
-        m = re.match("M([0-9]+)_S([0-9]+)", id)
-        return int(m.group(1)), int(m.group(2))
+        return True
 
     def set_language(self, language):
         self.language = language
 
-    def find_station(self, name):
-        if name in self.metro_stations:
-            return name, self.metro_stations.index(name)
-
-        for station in self.metro_stations:
-            for language in self.language_pack[station]:
-                if name == self.language_pack[station][language]:
-                    return station, self.metro_stations.index(station)
-
-        return None
-
-    def explore_path(self):
-        for station in range(self.metro_length):
-            dist, path = self.dijkstra(station)
-
-            self.path_map[station] = {
-                "DIST": dist,
-                "PATH": path
-            }
-
-        return self.path_map
-
-    def find_path(self, source, destination):
-        if len(self.path_map.keys()) != self.metro_length:
-            self.explore_path()
-
-        source, source_id = self.find_station(source)
-        destination, destination_id = self.find_station(destination)
-
-        distance = self.path_map[source_id]["DIST"][destination_id]
-        path = self.path_map[source_id]["PATH"][destination_id]
-
-        return distance, path
+        return True
 
     def set_metro_stations(self):
         self.metro_stations = [station for station in self.metro_map.keys()]
         self.metro_stations.sort(key=self.get_sort_key)
         self.metro_length = len(self.metro_stations)
+
+        return True
 
     def create_metro_matrix(self):
         metro_matrix = [[self.INF for _ in range(self.metro_length)] for _ in range(self.metro_length)]
@@ -119,20 +77,155 @@ class Metro:
 
         self.metro_matrix = metro_matrix
 
-        return metro_matrix
+        return True
 
     def create_distance_map(self):
         self.metro_distance_map = self.floyd()
+
+        return True
+
+    def get_distance_map(self, print_result=False):
+        if self.metro_length == 0 or len(self.metro_distance_map) != self.metro_length:
+            self.setup_environment(distance_map=True)
+
+        if print_result:
+            self.print_matrix(self.metro_distance_map)
+
         return self.metro_distance_map
+
+    def get_station_key(self, station):
+        if isinstance(station, int):
+            return self.metro_stations[station]
+        if isinstance(station, str):
+            name, station_id = self.find_station(station)
+            return self.metro_stations[station_id]
+
+        return None
+
+    def get_station_name(self, station, language=None):
+        if language is None:
+            language = self.language
+
+        if isinstance(station, int):
+            station = self.metro_stations[station]
+            return self.language_pack[station][language]
+
+        if isinstance(station, str):
+            return self.language_pack[station][language]
+
+    def get_service_name(self, service, language=None):
+        if language is None:
+            language = self.language
+
+        return self.service_pack[service][language]
+
+    def get_station_delay(self, station):
+        station = self.get_station_key(station)
+
+        return self.metro_map[station]["DELAY"].total_seconds()
+
+    def get_sort_key(self, id):
+        m = re.match("M([0-9]+)_S([0-9]+)", id)
+
+        return int(m.group(1)), int(m.group(2))
+
+    def get_path(self, source, destination, print_result=False):
+        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+            self.setup_environment(path_map=True)
+
+        source, source_id = self.find_station(source)
+        destination, destination_id = self.find_station(destination)
+
+        distance = self.path_map[source_id]["DIST"][destination_id]
+        path = self.path_map[source_id]["PATH"][destination_id]
+
+        if print_result:
+            self.print_path(distance, path)
+
+        return distance, path
+
+    def get_path_map(self, source, print_result=False):
+        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+            self.setup_environment(path_map=True)
+
+        source, source_id = self.find_station(source)
+
+        distance = self.path_map[source_id]["DIST"]
+        path = self.path_map[source_id]["PATH"]
+
+        if print_result:
+            self.print_path_map(distance, path)
+
+        return distance, path
+
+    def explore_path(self):
+        path_map = {}
+
+        for station in range(self.metro_length):
+            dist, path = self.dijkstra(station)
+
+            path_map[station] = {
+                "DIST": dist,
+                "PATH": path
+            }
+        self.path_map = path_map
+
+        return self.path_map
+
+    def find_station(self, name):
+        if isinstance(name, int):
+            station_id = name
+            return self.metro_stations[station_id], station_id
+
+        if name in self.metro_stations:
+            return name, self.metro_stations.index(name)
+
+        for station in self.metro_stations:
+            for language in self.language_pack[station]:
+                if name == self.language_pack[station][language]:
+                    return station, self.metro_stations.index(station)
+
+        return None
+
+    def find_path(self, source, destination, print_result=False):
+        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+            self.setup_environment()
+
+        source, source_id = self.find_station(source)
+        destination, destination_id = self.find_station(destination)
+
+        distance, path = self.dijkstra(source_id)
+
+        distance = distance[destination_id]
+        path = path[destination_id]
+
+        if print_result:
+            self.print_path(distance, path)
+
+        return distance, path
+
+    def find_path_map(self, source, print_result=False):
+        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+            self.setup_environment()
+
+        source, source_id = self.find_station(source)
+
+        distance, path = self.dijkstra(source_id)
+
+        if print_result:
+            self.print_path_map(distance, path)
+
+        return distance, path
 
     def export_file(self, filename="exported", extension="xlsx", matrix=None):
         if matrix is None:
-            if len(self.metro_distance_map) != self.metro_length:
-                self.metro_distance_map = self.create_distance_map()
+            if len(self.get_distance_map()) != self.metro_length:
+                self.create_distance_map()
 
-            matrix = self.metro_distance_map
+            matrix = self.get_distance_map()
 
-        matrix = [[time.strftime("%M:%S", time.gmtime(seconds)) if seconds != 0 else "X" for seconds in row] for row in matrix]
+        matrix = [[time.strftime("%M:%S", time.gmtime(seconds)) if seconds != 0 else "X" for seconds in row] for row in
+                  matrix]
 
         stations = [""] + [self.get_station_name(station) for station in self.metro_stations]
         matrix.insert(0, stations)
@@ -142,17 +235,22 @@ class Metro:
         arr = numpy.asarray(matrix)
 
         if extension is "xlsx":
-            pandas.DataFrame(arr).to_excel(f"{filename}.{extension}", index=False, header=False)
+            pandas.DataFrame(arr).to_excel(filename=f"{filename}.{extension}", index=False, header=False)
         if extension is "csv":
             pandas.DataFrame(arr).to_csv(f"{filename}.{extension}", index=False, header=False)
+
+        return True
 
     def print_matrix(self, matrix=None):
         matrix = matrix
         if matrix is None:
             matrix = self.metro_matrix
         matrix_length = len(matrix)
+
         row_format = "{:>25}" * (matrix_length + 1)
+
         print(row_format.format("", *[self.get_station_name(vertex) for vertex in range(matrix_length)]))
+
         for edge, vertices in zip([vertex for vertex in range(matrix_length)], matrix):
             arr = []
             for vertex in vertices:
@@ -162,15 +260,20 @@ class Metro:
                     arr.append("X")
                 else:
                     arr.append(time.strftime("%M:%S", time.gmtime(vertex)))
+
             print(row_format.format(self.get_station_name(edge), *arr))
+
+        return True
 
     def print_path_map(self, dist, path):
         source = path[0][0]
+
         print("{} - {}\n".format(self.get_service_name("INITIAL"),
                                  self.get_station_name(source)))
         print("{:>25} {:>11} {:>31}".format(self.get_service_name("TERMINUS"),
                                             self.get_service_name("TIME"),
                                             self.get_service_name("PATH")))
+
         for node in range(self.metro_length):
             station_name = self.get_station_name(node)
             travel_time = time.strftime("%M:%S", time.gmtime(dist[node])) if dist[node] != self.INF else "∞"
@@ -182,9 +285,12 @@ class Metro:
                 else:
                     path_array.append(self.get_station_name(station))
                 prev = station
+
             print("{:>25} {:>11} {:>31}".format(station_name,
                                                 travel_time,
                                                 " -> ".join(path_array)))
+
+        return True
 
     def print_path(self, dist, path):
         print("{:>25} {:>25} {:>11} {:>31}".format(self.get_service_name("INITIAL"),
@@ -211,6 +317,7 @@ class Metro:
                                                    destination_name,
                                                    travel_time,
                                                    " -> ".join(path_array)))
+        return True
 
     def dijkstra(self, src):
         dist = [self.INF] * self.metro_length
@@ -226,7 +333,7 @@ class Metro:
             u = self.__extract_min(dist, visited)
             visited[u] = True
             for v in range(self.metro_length):
-                delay = self.metro_map[self.metro_stations[u]]["DELAY"].total_seconds()
+                delay = self.get_station_delay(u)
                 alt = dist[u] + self.metro_matrix[u][v] + delay
                 if dist[v] > alt and visited[v] is False:
                     dist[v] = alt
@@ -245,14 +352,12 @@ class Metro:
         return min_index
 
     def floyd(self):
-        dist = self.metro_matrix.copy()
+        dist = [[column for column in row] for row in self.metro_matrix]
 
         for k in range(self.metro_length):
             for i in range(self.metro_length):
                 for j in range(self.metro_length):
                     delay = self.metro_map[self.metro_stations[i]]["DELAY"].total_seconds()
                     dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j] + delay)
-
-        self.metro_distance_map = dist
 
         return dist
