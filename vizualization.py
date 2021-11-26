@@ -41,7 +41,6 @@ def cache_comparison(filename=None):
     get_array = []
 
     for i in range(s + 1):
-        # print(f"STATIONS: {i}")
         stations.append(i)
 
         find = find_time(i)
