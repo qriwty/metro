@@ -54,7 +54,7 @@ metro.find_path(18, 19, print_result=True)
         ID станции, номер станции, название станции
 """
 
-metro.get_path(18, 19, print_result=True)
+metro.get_path("M1_S1", "Хрещатик", print_result=True)
 
 
 #
@@ -71,7 +71,7 @@ metro.get_path(18, 19, print_result=True)
     Данный метод принимает на вход станцию А
 """
 
-metro.find_path_map(18, print_result=True)
+metro.find_path_map("Хрещатик", print_result=True)
 
 
 #
@@ -88,7 +88,7 @@ metro.find_path_map(18, print_result=True)
     Данный метод принимает на вход станцию А
 """
 
-metro.get_path_map(18, print_result=True)
+metro.get_path_map("Майдан Незалежності", print_result=True)
 
 
 #
