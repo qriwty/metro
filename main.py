@@ -1,12 +1,8 @@
 from metro import *
 
-test = Metro()
+test = Metro(setup_environment=True)
+test.set_language("UKR")
 
-test.create_metro_matrix()
-
-dist, path = test.dijkstra(0)
+dist, path = test.find_path("Академгородок", "Хрещатик")
 
 test.print_path(dist, path)
-
-test.export_file()
-
