@@ -11,7 +11,7 @@ class Metro:
         self.metro_map = map.metro
         self.language_pack = map.language_pack
         self.service_pack = map.service_language_pack
-        self.language = "UKR"
+        self.language = None
 
         self.metro_matrix = []
 
@@ -106,6 +106,9 @@ class Metro:
         if language is None:
             language = self.language
 
+        if language is None:
+            return self.get_station_key(station)
+
         if isinstance(station, int):
             station = self.metro_stations[station]
             return self.language_pack[station][language]
@@ -116,6 +119,9 @@ class Metro:
     def get_service_name(self, service, language=None):
         if language is None:
             language = self.language
+
+        if language is None:
+            return service
 
         return self.service_pack[service][language]
 
