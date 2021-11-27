@@ -342,7 +342,7 @@ class Metro:
                     dist[v] = alt
                     path[v] = path[u] + [v]
 
-        return [dist, path]
+        return dist, path
 
     def __extract_min(self, dist, visited):
         min_value = self.INF
