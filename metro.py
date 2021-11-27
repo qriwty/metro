@@ -335,8 +335,8 @@ class Metro:
         for _ in range(self.metro_length):
             u = self.__extract_min(dist, visited)
             visited[u] = True
+            delay = self.get_station_delay(u)
             for v in range(self.metro_length):
-                delay = self.get_station_delay(u)
                 alt = dist[u] + self.metro_matrix[u][v] + delay
                 if dist[v] > alt and visited[v] is False:
                     dist[v] = alt
