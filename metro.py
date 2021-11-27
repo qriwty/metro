@@ -10,7 +10,7 @@ class Metro:
     def __init__(self, setup_environment=False):
         self.metro_map = map.metro
         self.language_pack = map.language_pack
-        self.service_pack = map.service_language_pack
+
         self.language = "UKR"
 
         self.metro_matrix = []
@@ -103,21 +103,27 @@ class Metro:
         return None
 
     def get_station_name(self, station, language=None):
-        if language is None:
+        if language is None or language not in self.language_pack["STATION"][station].keys():
             language = self.language
+
+        if language is None:
+            return self.get_station_key(station)
 
         if isinstance(station, int):
             station = self.metro_stations[station]
-            return self.language_pack[station][language]
+            return self.language_pack["STATION"][station][language]
 
         if isinstance(station, str):
-            return self.language_pack[station][language]
+            return self.language_pack["STATION"][station][language]
 
     def get_service_name(self, service, language=None):
-        if language is None:
+        if language is None or language not in self.language_pack["SERVICE"][service].keys():
             language = self.language
 
-        return self.service_pack[service][language]
+        if language is None:
+            return service
+
+        return self.language_pack["SERVICE"][service][language]
 
     def get_station_delay(self, station):
         station = self.get_station_key(station)
@@ -181,8 +187,8 @@ class Metro:
             return name, self.metro_stations.index(name)
 
         for station in self.metro_stations:
-            for language in self.language_pack[station]:
-                if name == self.language_pack[station][language]:
+            for language in self.language_pack["STATION"][station]:
+                if name == self.language_pack["STATION"][station][language]:
                     return station, self.metro_stations.index(station)
 
         return None
