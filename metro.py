@@ -360,7 +360,7 @@ class Metro:
         for k in range(self.metro_length):
             for i in range(self.metro_length):
                 for j in range(self.metro_length):
-                    delay = self.metro_map[self.metro_stations[i]]["DELAY"].total_seconds()
+                    delay = self.get_station_delay(i)
                     dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j] + delay)
 
         return dist
