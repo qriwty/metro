@@ -128,7 +128,10 @@ class Metro:
     def get_station_delay(self, station):
         station = self.get_station_key(station)
 
-        return self.metro_map[station]["DELAY"].total_seconds()
+        if "DELAY" in self.metro_map[station].keys():
+            return self.metro_map[station]["DELAY"].total_seconds()
+
+        return 0
 
     def get_sort_key(self, id):
         m = re.match("M([0-9]+)_S([0-9]+)", id)
