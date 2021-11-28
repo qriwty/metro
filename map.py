@@ -1,34 +1,6 @@
 import datetime
 
 
-# service_language_pack = {
-#     "TRANSFER": {
-#         "UKR": "Перехід",
-#         "RUS": "Переход",
-#         "ENG": "Transfer",
-#     },
-#     "INITIAL": {
-#         "UKR": "Початок руху",
-#         "RUS": "Начальная остановка",
-#         "ENG": "Initial stop"
-#     },
-#     "TERMINUS": {
-#         "UKR": "Кінцева зупинка",
-#         "RUS": "Конечная остановка",
-#         "ENG": "Terminus"
-#     },
-#     "TIME": {
-#         "UKR": "Час руху",
-#         "RUS": "Время в пути",
-#         "ENG": "Travel time"
-#     },
-#     "PATH": {
-#         "UKR": "Шлях",
-#         "RUS": "Путь",
-#         "ENG": "Path"
-#     }
-# }
-
 language_pack = {
     "STATION": {
         "M1_S1": {
