@@ -2,7 +2,7 @@
 
 ## _Calculated and graphic work_
 
-METRO - an app for finding the shortest path between metropolitan stations
+METRO - an [**app**][metro] for finding the shortest path between metropolitan stations
 
 ## Requirements
 
@@ -21,6 +21,8 @@ _Visualization:_
 - Networkx
 
 ## Required data
+
+> Example in file [`map.py`][map.py]
 
 ### _Metro map_
 
@@ -88,6 +90,8 @@ Stores service name in different languages by Service NAME
 
 ## Usage
 
+> More in [`main.py`][main.py]
+
 To use this app you need to import and create object
 
 ```python
@@ -104,4 +108,41 @@ Description of common methods
 | get_distance_map() | Returns the distance map between all stations |
 | print_path(distance, path) | Prints the path found |
 
+
+## Examples
+
+To find path between station A and station B
+
+```python
+metro.find_path("station A", "station B", print_result=True)
+```
+
+To find path map from station A
+
+```python
+metro.find_path_map("station A", print_result=True)
+```
+
+To find path using cached values
+
+```python
+metro.get_path("station A", "station B", print_result=True)
+```
+
+To get distance map
+
+```python
+metro.get_distance_map(print_result=True)
+```
+
+To export distance map to current directory
+
+```python
+metro.export_file(filename="Exported", extension="csv")
+```
+
 ## Thank you for reviewing my work
+
+[metro]: https://github.com/qriwty/metro
+[main.py]: https://github.com/qriwty/metro/blob/master/main.py
+[map.py]: https://github.com/qriwty/metro/blob/master/map.py
