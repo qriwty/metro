@@ -197,7 +197,7 @@ class Metro:
         return None
 
     def find_path(self, source, destination, print_result=False):
-        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+        if self.metro_length == 0 or len(self.metro_matrix) != self.metro_length:
             self.setup_environment()
 
         source, source_id = self.find_station(source)
@@ -214,7 +214,7 @@ class Metro:
         return distance, path
 
     def find_path_map(self, source, print_result=False):
-        if self.metro_length == 0 or len(self.path_map.keys()) != self.metro_length:
+        if self.metro_length == 0 or len(self.metro_matrix) != self.metro_length:
             self.setup_environment()
 
         source, source_id = self.find_station(source)
@@ -368,8 +368,8 @@ class Metro:
 
         for k in range(self.metro_length):
             for i in range(self.metro_length):
+                delay = self.get_station_delay(i)
                 for j in range(self.metro_length):
-                    delay = self.get_station_delay(i)
                     dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j] + delay)
 
         return dist
