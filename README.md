@@ -6,6 +6,8 @@ METRO - an app for finding the shortest path between metropolitan stations
 
 ## Requirements
 
+<a target="_blank" href="https://www.python.org/downloads/" title="Python version"><img src="https://img.shields.io/badge/python-3.7%2B-brightgreen"></a>
+
 **No additional packages are required by default.**
 
 To make full use of this application, you need to install additional packages.
