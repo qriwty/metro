@@ -20,6 +20,8 @@ class Metro:
 
         self.INF = math.inf
 
+        self.heuristic = {}
+
         self.metro_distance_map = []
 
         self.path_map = {}
@@ -30,6 +32,8 @@ class Metro:
     def setup_environment(self, distance_map=False, path_map=False):
         self.set_metro_stations()
         self.create_metro_matrix()
+        self.create_heuristic()
+
         if distance_map:
             self.create_distance_map()
         if path_map:
@@ -84,6 +88,17 @@ class Metro:
 
         return True
 
+    def create_heuristic(self):
+        heuristic = {}
+        value = 1
+
+        for station in self.metro_stations:
+            heuristic[station] = value
+
+        self.heuristic = heuristic
+
+        return self.heuristic
+
     def get_distance_map(self, print_result=False):
         if self.metro_length == 0 or len(self.metro_distance_map) != self.metro_length:
             self.setup_environment(distance_map=True)
@@ -99,6 +114,15 @@ class Metro:
         if isinstance(station, str):
             name, station_id = self.find_station(station)
             return self.metro_stations[station_id]
+
+        return None
+
+    def get_station_id(self, station):
+        if isinstance(station, int):
+            return station
+        if isinstance(station, str):
+            name, station_id = self.find_station(station)
+            return station_id
 
         return None
 
@@ -132,6 +156,22 @@ class Metro:
             return self.metro_map[station]["DELAY"].total_seconds()
 
         return 0
+
+    def get_neighbours(self, station):
+        connections = []
+
+        station = self.get_station_key(station)
+
+        for neighbour, travel_time in self.metro_map[station]["CONNECTIONS"]:
+            delay = self.metro_map[neighbour]["DELAY"].total_seconds()
+            connections.append([neighbour, travel_time.total_seconds() + delay])
+
+        if self.metro_map[station]["TYPE"] == "TRANSFER":
+            for transfer, travel_time in self.metro_map[station]["TRANSFER"]:
+                delay = self.metro_map[transfer]["DELAY"].total_seconds()
+                connections.append([transfer, travel_time.total_seconds() + delay])
+
+        return connections
 
     def get_sort_key(self, id):
         m = re.match("M([0-9]+)_S([0-9]+)", id)
@@ -203,10 +243,7 @@ class Metro:
         source, source_id = self.find_station(source)
         destination, destination_id = self.find_station(destination)
 
-        distance, path = self.dijkstra(source_id)
-
-        distance = distance[destination_id]
-        path = path[destination_id]
+        distance, path = self.a_star(source, destination)
 
         if print_result:
             self.print_path(distance, path)
@@ -309,11 +346,15 @@ class Metro:
                                                    self.get_service_name("TERMINUS"),
                                                    self.get_service_name("TIME"),
                                                    self.get_service_name("PATH")))
+
+        path = [self.get_station_id(station) for station in path]
+
         source = path[0]
         destination = path[-1]
 
         source_name = self.get_station_name(source)
         destination_name = self.get_station_name(destination)
+
         travel_time = time.strftime("%M:%S", time.gmtime(dist)) if dist != self.INF else "∞"
 
         path_array = []
@@ -362,6 +403,64 @@ class Metro:
                 min_index = u
 
         return min_index
+
+    def a_star(self, source, destination):
+        open_stations = {source}
+        closed_stations = set()
+
+        distance = {source: 0}
+
+        path = {source: source}
+
+        while len(open_stations) > 0:
+            current = None
+
+            for nearest in open_stations:
+                if current is None or \
+                        distance[nearest] + self.heuristic_function(nearest) < \
+                        distance[current] + self.heuristic_function(current):
+                    current = nearest
+
+            if current is None:
+                return None
+
+            if current == destination:
+                reconstructed_path = []
+
+                while path[current] != current:
+                    reconstructed_path.append(current)
+                    current = path[current]
+
+                reconstructed_path.append(source)
+                reconstructed_path.reverse()
+
+                return distance[destination], reconstructed_path
+
+            for station, travel_time in self.get_neighbours(current):
+                if station not in open_stations and station not in closed_stations:
+                    open_stations.add(station)
+                    path[station] = current
+                    distance[station] = distance[current] + travel_time
+                else:
+                    if distance[station] > distance[current] + travel_time:
+                        distance[station] = distance[current] + travel_time
+                        path[station] = current
+                        if station in closed_stations:
+                            closed_stations.remove(station)
+                            open_stations.add(station)
+
+            open_stations.remove(current)
+            closed_stations.add(current)
+
+        return None
+
+    def heuristic_function(self, station):
+        if len(self.heuristic) == 0 or len(self.heuristic) != self.metro_stations:
+            self.setup_environment()
+
+        station = self.get_station_key(station)
+
+        return self.heuristic[station]
 
     def floyd(self):
         dist = [[column for column in row] for row in self.metro_matrix]
