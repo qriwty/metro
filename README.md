@@ -46,13 +46,13 @@ TYPE:
 
 DELAY:
 Delay of current station
-> DELAY -- datetime.timedelta()
+> DELAY -- `datetime.timedelta()`
 
 CONNECTIONS:
 Connections with other stations are written to the array. 
 In the connection array [NEIGHBOUR, TIME]
-> NEIGHBOUR -- Station ID
-> TIME -- datetime.timedelta()
+> NEIGHBOUR -- `Station ID`
+> TIME -- `datetime.timedelta()`
 
 TRANSFER (optional):
 Transfer connections are written in "CONNECTIONS" style.
