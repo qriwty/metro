@@ -14,7 +14,7 @@ _Export to file:_
 - Numpy
 - Pandas
 
-_Vizualization:_
+_Visualization:_
 - Matplotlib
 - Networkx
 
@@ -55,12 +55,12 @@ In the connection array [NEIGHBOUR, TIME]
 > TIME -- datetime.timedelta()
 
 TRANSFER (optional):
-Tranfser connections are written in "CONNECTIONS" style.
-Еhis array contains all connections to other subway lines to get to another station.
+Transfer connections are written in "CONNECTIONS" style.
+This array contains all connections to other subway lines to get to another station.
 
 ### _Language pack (optional)_
 
-In this app you are able to add new languages for stations name and serivces
+In this app you are able to add new languages for stations name and services
 
 ```python
 language_pack = {
@@ -78,10 +78,10 @@ language_pack = {
 ```
 
 STATION:
-Stores stations name in different langiages by Station ID
+Stores stations name in different languages by Station ID
 
 SERVICE:
-Stores service name in different langiages by Service NAME
+Stores service name in different languages by Service NAME
 
 
 ## Usage
