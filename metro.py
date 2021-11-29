@@ -1,3 +1,5 @@
+import datetime
+
 import map
 import math
 import re
@@ -210,8 +212,14 @@ class Metro:
 
         return distance, path
 
-    def time_to_seconds(self, time):
-        return time.total_seconds()
+    def time_to_seconds(self, raw_time):
+        if isinstance(raw_time, (int, float, complex)):
+            return raw_time
+
+        if isinstance(raw_time, datetime.timedelta):
+            return raw_time.total_seconds()
+
+        return 0
 
     def explore_path(self):
         path_map = {}
