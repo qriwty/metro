@@ -67,7 +67,7 @@ class Metro:
             for neighbour in self.metro_map[station]["CONNECTIONS"]:
                 neighbour_index = self.metro_stations.index(neighbour[0])
 
-                time_to_station = neighbour[1].total_seconds()
+                time_to_station = self.time_to_seconds(neighbour[1])
 
                 metro_matrix[station_index][neighbour_index] = time_to_station
 
@@ -75,7 +75,7 @@ class Metro:
                 for transfer in self.metro_map[station]["TRANSFER"]:
                     transfer_index = self.metro_stations.index(transfer[0])
 
-                    time_to_station = transfer[1].total_seconds()
+                    time_to_station = self.time_to_seconds(transfer[1])
 
                     metro_matrix[station_index][transfer_index] = time_to_station
 
@@ -153,7 +153,8 @@ class Metro:
         station = self.get_station_key(station)
 
         if "DELAY" in self.metro_map[station].keys():
-            return self.metro_map[station]["DELAY"].total_seconds()
+            delay = self.metro_map[station]["DELAY"]
+            return self.time_to_seconds(delay)
 
         return 0
 
@@ -163,13 +164,15 @@ class Metro:
         station = self.get_station_key(station)
 
         for neighbour, travel_time in self.metro_map[station]["CONNECTIONS"]:
-            delay = self.metro_map[neighbour]["DELAY"].total_seconds()
-            connections.append([neighbour, travel_time.total_seconds() + delay])
+            delay = self.get_station_delay(neighbour)
+            travel_time = delay + self.time_to_seconds(travel_time)
+            connections.append([neighbour, travel_time])
 
         if self.metro_map[station]["TYPE"] == "TRANSFER":
             for transfer, travel_time in self.metro_map[station]["TRANSFER"]:
-                delay = self.metro_map[transfer]["DELAY"].total_seconds()
-                connections.append([transfer, travel_time.total_seconds() + delay])
+                delay = self.get_station_delay(transfer)
+                travel_time = delay + self.time_to_seconds(travel_time)
+                connections.append([transfer, travel_time])
 
         return connections
 
@@ -206,6 +209,9 @@ class Metro:
             self.print_path_map(distance, path)
 
         return distance, path
+
+    def time_to_seconds(self, time):
+        return time.total_seconds()
 
     def explore_path(self):
         path_map = {}
